@@ -26,8 +26,8 @@ public class Controller {
     }
 
     @PostMapping
-    public void create(){
-
+    public void create(@RequestBody User user){
+repo.save(user);
     }
 
 }
