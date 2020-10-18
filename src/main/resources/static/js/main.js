@@ -51,16 +51,24 @@ Vue.component('user-form',{
 });
 
 Vue.component('user-row',{
-    props: ['user','editMethod'],
+    props: ['user','editMethod','users'],
     template:'<div>' +
         '<i>{{ user.id }} </i>{{user.name}}' +
         '<span>' +
         '</span>' +
         '<input type="button" value="Edit" @click="edit">'+
+        '<input type="button" value="X" @click="del">'+
         '</div>',
     methods: {
         edit: function () {
             this.editMethod(this.user)
+        },
+        del:function () {
+            vavrRestApi.remove({id:this.user.id}).then(result=>{
+                if (result.ok){
+                    this.users.splice(this.users.indexOf(this.user),1)
+                }
+            })
         }
     }
 });
