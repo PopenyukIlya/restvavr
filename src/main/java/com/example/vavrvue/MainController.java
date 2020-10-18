@@ -13,8 +13,8 @@ public class MainController {
     @Autowired
     private Repo repo;
 
-    @GetMapping(value="/")
-    public String getVavrResult() {
+    @GetMapping(value="/getdb")
+    public String getdb() {
         repo.save(new User("Vasya"));
         repo.save(new User("Kolya"));
         repo.save(new User("Masha"));
