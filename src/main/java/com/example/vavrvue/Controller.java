@@ -8,10 +8,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 
 @RestController
 @RequestMapping("/restvavr")
 public class Controller {
+
     @Autowired
     private Repo repo;
 
@@ -27,46 +30,41 @@ public class Controller {
     }
 
     //find by id
-    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-    public ResponseEntity<?> findById(@PathVariable ("id") Long id) {
-        Option<User> user=repo.findById(id);
-        if (user.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }else {
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        }
-    }
+//    @RequestMapping(value = "{id}", method = RequestMethod.GET)
+//    public ResponseEntity<?> findById(@PathVariable ("id") Long id) {
+//        Option<User> user=repo.findById(id);
+//        if (user.isEmpty()){
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }else {
+//            return new ResponseEntity<>(user, HttpStatus.OK);
+//        }
+//    }
 
     //delete by id
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@PathVariable ("id") Long id){
-        Option<User> oldUser=repo.findById(id);
-        if (oldUser.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            repo.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        Try delete=repo.deleteById(id);
+        if (delete.isSuccess()){
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     //create
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> create(@RequestBody User user){
-        if (user.getName()==""){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        Seq<User> userInDb=repo.findByName(user.getName());
-        if (!userInDb.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> create(@RequestBody @Valid User user){
+        Try<User> saveUser=repo.save(user);
+        if (saveUser.isSuccess()){
+            return new ResponseEntity<>(user,HttpStatus.CREATED);
         }else {
-            Try<User> saveUser=repo.save(user);
-            return new ResponseEntity<>(saveUser.get(),HttpStatus.CREATED);}
+            return new ResponseEntity<>(saveUser.get(),HttpStatus.BAD_REQUEST);}
     }
 
     //update
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
     public ResponseEntity<?> update(@PathVariable ("id") Long id,
-                                    @RequestBody User user){
+                                    @RequestBody @Valid User user){
         Option<User> oldUser=repo.findById(id);
         Seq<User> byNewName=repo.findByName(user.getName());
         if (!byNewName.isEmpty()){

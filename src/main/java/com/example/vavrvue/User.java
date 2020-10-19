@@ -1,10 +1,9 @@
 package com.example.vavrvue;
-;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.sun.istack.NotNull;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 
 @Entity
@@ -14,6 +13,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Column(unique = true)
+    @NotBlank
     private String name;
 
     public User() {
