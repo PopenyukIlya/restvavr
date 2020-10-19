@@ -58,22 +58,18 @@ public class Controller {
         if (saveUser.isSuccess()){
             return new ResponseEntity<>(user,HttpStatus.CREATED);
         }else {
-            return new ResponseEntity<>(saveUser.get(),HttpStatus.BAD_REQUEST);}
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);}
     }
 
     //update
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
     public ResponseEntity<?> update(@PathVariable ("id") Long id,
                                     @RequestBody @Valid User user){
-        Option<User> oldUser=repo.findById(id);
-        Seq<User> byNewName=repo.findByName(user.getName());
-        if (!byNewName.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);}
-        if (oldUser.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }else {
-           Try<User> saveUser= repo.save(new User(id,user.getName()));
-            return new ResponseEntity<>(saveUser.get(),HttpStatus.OK);
-        }
+        User updateUser=new User(id,user.getName());
+           Try<User> saveUser= repo.save(updateUser);
+           if (saveUser.isSuccess()){
+               return new ResponseEntity<>(updateUser, HttpStatus.OK);
+           }else {
+               return new ResponseEntity<>(HttpStatus.BAD_REQUEST);}
     }
 }
