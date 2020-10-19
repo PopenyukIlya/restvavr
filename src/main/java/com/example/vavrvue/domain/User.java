@@ -1,4 +1,4 @@
-package com.example.vavrvue;
+package com.example.vavrvue.domain;
 
 import lombok.Data;
 import lombok.Getter;
@@ -20,7 +20,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @NotBlank
     @Column(name = "name",unique = true)
