@@ -3,10 +3,10 @@ package com.example.vavrvue;
 import io.vavr.collection.Seq;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.Repository;
 
-@Repository
-public interface Repo  extends org.springframework.data.repository.Repository<User,Long> {
+@org.springframework.stereotype.Repository
+public interface Repo  extends Repository<User,Long> {
     Option<User> findById(long id);
     Option<User> findAll();
     Try deleteById(Long id);

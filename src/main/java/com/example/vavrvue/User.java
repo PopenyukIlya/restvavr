@@ -1,49 +1,30 @@
 package com.example.vavrvue;
 
-import com.sun.istack.NotNull;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 
+@Data
 @Entity
+@Getter
+@Setter
+@RequiredArgsConstructor
+@Table(name = "users")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private long id;
 
-    @Column(unique = true)
     @NotBlank
+    @Column(name = "name",unique = true)
     private String name;
-
-    public User() {
-    }
-
-    public User(String name) {
-        this.name = name;
-    }
-
-    public User(long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
 
 }

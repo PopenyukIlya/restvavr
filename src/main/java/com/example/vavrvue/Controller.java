@@ -1,6 +1,5 @@
 package com.example.vavrvue;
 
-import io.vavr.collection.Seq;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +28,6 @@ public class Controller {
         }
     }
 
-    //find by id
-//    @RequestMapping(value = "{id}", method = RequestMethod.GET)
-//    public ResponseEntity<?> findById(@PathVariable ("id") Long id) {
-//        Option<User> user=repo.findById(id);
-//        if (user.isEmpty()){
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }else {
-//            return new ResponseEntity<>(user, HttpStatus.OK);
-//        }
-//    }
 
     //delete by id
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
@@ -65,10 +54,9 @@ public class Controller {
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
     public ResponseEntity<?> update(@PathVariable ("id") Long id,
                                     @RequestBody @Valid User user){
-        User updateUser=new User(id,user.getName());
-           Try<User> saveUser= repo.save(updateUser);
+           Try<User> saveUser= repo.save(user);
            if (saveUser.isSuccess()){
-               return new ResponseEntity<>(updateUser, HttpStatus.OK);
+               return new ResponseEntity<>(user, HttpStatus.OK);
            }else {
                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);}
     }
