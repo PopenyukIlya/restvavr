@@ -1,60 +1,63 @@
 package com.example.vavrvue.services;
 
+import com.example.vavrvue.Exception.ApplicationError;
+import com.example.vavrvue.controllers.dto.UserDto;
 import com.example.vavrvue.domain.User;
 import com.example.vavrvue.repos.UserRepo;
-import io.vavr.collection.Seq;
-import io.vavr.control.Option;
+import io.vavr.control.Either;
 import io.vavr.control.Try;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
-    private final UserRepo repo;
+    private final UserRepo userRepo;
+    @Autowired
+    private ModelMapper modelMapper;
+
 
     public UserService(UserRepo userRepo) {
-        this.repo = userRepo;
+        this.userRepo = userRepo;
     }
 
-    public ResponseEntity<?> findAll() {
-        Option<User> users=repo.findAll();
-        if (users.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }else {
-            return new ResponseEntity<>(users, HttpStatus.OK);
-        }
+    public List<UserDto> findAll() {
+        return userRepo.findAll()
+                .stream()
+                .map(tag -> modelMapper.map(tag, UserDto.class))
+                .collect(Collectors.toList());
     }
 
-    public ResponseEntity<?> delete(Long id) {
-        Try delete=repo.deleteById(id);
-        if (delete.isSuccess()){
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public void delete(Long id) {
+        userRepo.deleteById(id);}
+
+    //don't work exactly
+
+    public Either<ApplicationError, User>  create(UserDto userDto) {
+       User user=new User();
+       user.setName(userDto.getName());
+        return Try
+                .of(() -> userRepo.save(user))
+                .toEither()
+                .mapLeft(exc -> {
+                    String message = String.format("Exception while saving a new user with name %s and id %s.", user.getName(), user.getId());
+                    return new ApplicationError(message);
+                });
     }
 
-    public ResponseEntity<?> create(User user) {
-        Try<User> saveUser=repo.save(user);
-        if (saveUser.isSuccess()){
-            return new ResponseEntity<>(user,HttpStatus.CREATED);
-        }else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
+//    //don't work
+//    public Either<ApplicationError, UserDto> update(UserDto userDto) {
+//        return userRepo.findByNameAndId(userDto.getName())
+//                .toEither(() -> new ApplicationError(String.format("Can't find user by id %s and user name %s",  userDto.getName())))
+//                .peek(user -> user.setName(userDto.getName()))
+//                .map(userRepo::save)
+//                .map(user -> modelMapper.map(user, UserDto.class));
+//    }
 
-    public ResponseEntity<?> update(Long id, User user) {
-        Option<User> oldUser=repo.findById(id);
-        if (oldUser.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }else {
-            User olDUser= oldUser.get();
-            olDUser.setName(user.getName());
-            Try<User> saveUser= repo.save(olDUser);
-            return new ResponseEntity<>(saveUser.get(),HttpStatus.OK);
-        }  }
+
 }

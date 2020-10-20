@@ -88,7 +88,7 @@ Vue.component('users-list',{
         '</div>',
     created: function () {
         vavrRestApi.get().then(result=>result.json().then(
-            data=>data.orNull.forEach(orNull=>this.users.push(orNull)))
+            data=>data.forEach(data=>this.users.push(data)))
     )
     },
     methods:{
