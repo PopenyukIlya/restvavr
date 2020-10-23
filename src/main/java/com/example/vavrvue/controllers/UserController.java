@@ -3,17 +3,10 @@ package com.example.vavrvue.controllers;
 import com.example.vavrvue.Exception.ApplicationError;
 import com.example.vavrvue.controllers.dto.UserDto;
 import com.example.vavrvue.domain.User;
-import com.example.vavrvue.repos.UserRepo;
 import com.example.vavrvue.services.UserService;
 import io.vavr.control.Either;
-import io.vavr.control.Option;
-import io.vavr.control.Try;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 
@@ -27,10 +20,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    //getall
     @RequestMapping(value = "", method = RequestMethod.GET)
     public List<UserDto> findAll(){
-        return userService.findAll();
+       return userService.findAll();
     }
 
     //delete by id
@@ -46,8 +38,8 @@ public class UserController {
     }
 //
 //    //update
-//    @RequestMapping(method = RequestMethod.PUT)
-//    public Either<ApplicationError, UserDto> update(@RequestBody UserDto userDto){
-//        return userService.update(userDto);
-//    }
+    @RequestMapping(value = "{id}",method = RequestMethod.PUT)
+    public Either<ApplicationError, UserDto> update(@PathVariable ("id") Long id, @RequestBody UserDto userDto){
+        return userService.update(id,userDto);
+    }
 }

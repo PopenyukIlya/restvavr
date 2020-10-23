@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @org.springframework.stereotype.Repository
 public interface UserRepo extends JpaRepository<User,Long> {
-    Option<User> findByNameAndId(String name,Long id);
 }

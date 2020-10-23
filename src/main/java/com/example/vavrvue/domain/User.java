@@ -1,9 +1,7 @@
 package com.example.vavrvue.domain;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -16,7 +14,7 @@ import java.io.Serializable;
 @Setter
 @RequiredArgsConstructor
 @Table(name = "users")
-public class User implements Serializable {
+public class User implements CommonEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,5 +25,7 @@ public class User implements Serializable {
     @Column(name = "name",unique = true)
     private String name;
 
-
+    public User(String name) {
+        this.name=name;
+    }
 }
