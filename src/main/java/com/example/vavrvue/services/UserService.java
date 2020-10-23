@@ -1,18 +1,17 @@
 package com.example.vavrvue.services;
 
 import com.example.vavrvue.Exception.ApplicationError;
+import com.example.vavrvue.Exception.ErrorStatus;
 import com.example.vavrvue.controllers.dto.UserDto;
 import com.example.vavrvue.domain.User;
 import com.example.vavrvue.repos.UserRepo;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
-import io.vavr.control.Try;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,11 +39,14 @@ public class UserService {
 
     //work!!!!exactly
 //   добавиь проверку на существующего юзера
-    public Either<ApplicationError, User>  create(UserDto userDto) {
-      User user=new User(userDto.getName());
-       return Try.of(()-> userRepo.save(user))
-               .toEither(()->  new ApplicationError(String.format("Exception while saving a new user with name %s and id %s.", user.getName(), user.getId()))
-               );
+    public Either<ApplicationError, UserDto>  create(User user) {
+
+        return userRepo.findByName(user.getName())
+                .map(u -> new ApplicationError(ErrorStatus.USER_ALREADY_EXIST, String.format("User with name %s already exists", user.getName())))
+                .toEither(user).swap()
+                .peek(u -> u.setName(user.getName()))
+                .map(userRepo::save)
+                .map(u -> modelMapper.map(u, UserDto.class));
     }
 //
     //don't work
@@ -53,7 +55,7 @@ public class UserService {
                 .peek(user -> {
             user.setName(userDto.getName());
         }).map(userRepo::save).map(user -> modelMapper.map(user,UserDto.class))
-                .toEither(() -> new ApplicationError(String.format("User with id: %s not found: ", id)));
+                .toEither(() -> new ApplicationError(ErrorStatus.USER_NOT_FOUND, String.format("User with id: %s not found: ", id)));
     }
 
 

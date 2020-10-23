@@ -41,6 +41,7 @@ public class EitherControllerAdvice  implements ResponseBodyAdvice<Object> {
         return Match(either).of(
                 Case($Right($(Objects::nonNull)), v -> v),
                 Case($Left($(instanceOf(ApplicationError.class))), error -> {
+                    response.setStatusCode(error.getErrorStatus().getType());
                     return modelMapper.map(error, ApplicationErrorDto.class);
                 }),
                 Case($Right($(Objects::isNull)), v -> { throw new IllegalStateException("Null in Either#rigth"); }),

@@ -33,8 +33,8 @@ public class UserController {
 
     //create
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public Either<ApplicationError, User> create(@RequestBody UserDto userDto){
-       return userService.create(userDto);
+    public Either<ApplicationError, UserDto> create(@RequestBody User user){
+       return userService.create(user);
     }
 //
 //    //update
